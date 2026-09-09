@@ -17,8 +17,8 @@
 # limitations under the License.
 ################################################################################
 
-pkg_check_modules(WPEFRAMEWORK_PLUGINS REQUIRED WPEFrameworkPlugins)
-pkg_check_modules(WPEFRAMEWORK_SECURITYUTIL WPEFrameworkSecurityUtil)
+pkg_check_modules(THUNDER_PLUGINS REQUIRED ThunderPlugins)
+pkg_check_modules(THUNDER_SECURITYUTIL ThunderSecurityUtil)
 
 # Build TTS Service Client library
 set(TextToSpeechServiceClient_SOURCES
@@ -48,10 +48,10 @@ endif()
 
 add_library(TTSClient SHARED ${TTSClient_SOURCES})
 
-target_include_directories(TextToSpeechServiceClient PUBLIC ${WPEFRAMEWORK_PLUGINS_INCLUDE_DIRS})
+target_include_directories(TextToSpeechServiceClient PUBLIC ${THUNDER_PLUGINS_INCLUDE_DIRS})
 target_include_directories(TTSClient PUBLIC ${GLIB_INCLUDE_DIRS})
 
-if(NOT WPEFRAMEWORK_SECURITYUTIL_FOUND)
+if(NOT THUNDER_SECURITYUTIL_FOUND)
     add_definitions(-DSECURITY_TOKEN_ENABLED=0)
 endif()
 
@@ -61,15 +61,15 @@ endif()
 
 if(TTS_DEFAULT_BACKEND STREQUAL "firebolt")
     target_link_libraries(TextToSpeechServiceClient PUBLIC
-        ${WPEFRAMEWORK_PLUGINS_LIBRARIES}
-        ${WPEFRAMEWORK_SECURITYUTIL_LIBRARIES}
+        ${THUNDER_PLUGINS_LIBRARIES}
+        ${THUNDER_SECURITYUTIL_LIBRARIES}
         -lpthread
         FireboltSDK
     )
 else()
     target_link_libraries(TextToSpeechServiceClient PUBLIC
-        ${WPEFRAMEWORK_PLUGINS_LIBRARIES}
-        ${WPEFRAMEWORK_SECURITYUTIL_LIBRARIES}
+        ${THUNDER_PLUGINS_LIBRARIES}
+        ${THUNDER_SECURITYUTIL_LIBRARIES}
         -lpthread
     )
 endif()
