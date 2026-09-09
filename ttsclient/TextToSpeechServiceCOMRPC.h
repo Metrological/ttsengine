@@ -23,8 +23,8 @@
 #define MODULE_NAME ttsengine
 #endif
 
-#include <WPEFramework/core/core.h>
-#include <WPEFramework/plugins/Service.h>
+#include <Thunder/core/core.h>
+#include <Thunder/plugins/Service.h>
 
 #include <com/com.h>
 #include <core/core.h>
@@ -53,7 +53,7 @@
 namespace TTSThunderClient {
 
 
-using namespace WPEFramework;
+using namespace Thunder;
 
 class TextToSpeechServiceCOMRPC
 {
@@ -218,7 +218,7 @@ private:
     Core::ProxyType<RPC::InvokeServerType<1, 0, 4>> m_engine;
     Core::ProxyType<RPC::CommunicatorClient> m_comChannel;
     Exchange::ITextToSpeech *m_remoteObject { nullptr };
-    Core::Sink<Notification> m_notification;
+    Core::SinkType<Notification> m_notification;
 
     AsyncWorker m_worker;
 
