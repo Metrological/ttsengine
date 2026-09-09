@@ -23,8 +23,8 @@
 #define MODULE_NAME ttsengine
 #endif
 
-#include <WPEFramework/core/core.h>
-#include <WPEFramework/plugins/Service.h>
+#include <Thunder/core/core.h>
+#include <Thunder/plugins/Service.h>
 #undef LOG
 #include <thread>
 #include <mutex>
@@ -46,12 +46,12 @@ namespace TTSThunderClient {
 
 #define THUNDER_RPC_TIMEOUT 5000 /* milliseconds */
 
-using namespace WPEFramework;
+using namespace Thunder;
 
 using StringList = std::list<std::string>;
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
-using WPEFrameworkPlugin = WPEFramework::JSONRPC::LinkType<WPEFramework::Core::JSON::IElement>;
-using WPEFrameworkPluginPtr = WPEFramework::JSONRPC::LinkType<WPEFramework::Core::JSON::IElement>*;
+using ThunderPlugin = Thunder::JSONRPC::LinkType<Thunder::Core::JSON::IElement>;
+using ThunderPluginPtr = Thunder::JSONRPC::LinkType<Thunder::Core::JSON::IElement>*;
 
 class Service
 {
@@ -118,7 +118,7 @@ protected:
     virtual void onDeactivation(bool requested);
 
     const std::string m_callSign;
-    std::shared_ptr<WPEFrameworkPlugin> m_remoteObject;
+    std::shared_ptr<ThunderPlugin> m_remoteObject;
     StringList m_eventsRegistered;
     ClientList m_clients;
     std::mutex m_mutex;
@@ -129,7 +129,7 @@ protected:
     bool m_envOverride;
 
     static std::string getSecurityToken(const std::string &payload);
-    static WPEFrameworkPluginPtr controller(const std::string &payload);
+    static ThunderPluginPtr controller(const std::string &payload);
 
     // Reactivating crashed services
     bool lastSessionWasHealthy();
@@ -153,7 +153,7 @@ protected:
 template<typename handler_t, typename object_t>
 bool Service::subscribe(std::string event, handler_t handler, object_t object)
 {
-    // This protects the WPEFrameworkPlugin instance untill the function is complete
+    // This protects the ThunderPlugin instance untill the function is complete
     auto remote = m_remoteObject;
 
     if(!m_remoteObject)

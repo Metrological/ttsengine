@@ -25,8 +25,8 @@ MODULE_NAME_DECLARATION(BUILD_REFERENCE);
 #define GetSecurityToken(a, b) 0
 #define GetToken(a, b, c) 0
 #else
-#include <WPEFramework/securityagent/securityagent.h>
-#include <WPEFramework/securityagent/SecurityTokenUtil.h>
+#include <Thunder/securityagent/securityagent.h>
+#include <Thunder/securityagent/SecurityTokenUtil.h>
 #endif
 
 #define INITIAL_TOKEN_STRING "token="
@@ -95,7 +95,7 @@ std::string Service::getSecurityToken(const std::string &payload)
     }
 
     if(endpoint.empty()) {
-        Core::File file("/etc/WPEFramework/config.json");
+        Core::File file("/etc/Thunder/config.json");
 
         if(file.Open(true)) {
             JsonObject config;
@@ -131,9 +131,9 @@ std::string Service::getSecurityToken(const std::string &payload)
     return token;
 }
 
-WPEFrameworkPluginPtr Service::controller(const std::string &payload)
+ThunderPluginPtr Service::controller(const std::string &payload)
 {
-    static auto &controller = *(new WPEFrameworkPlugin("", "", false, Service::getSecurityToken(payload)));
+    static auto &controller = *(new ThunderPlugin("", "", false, Service::getSecurityToken(payload)));
     return &controller;
 }
 
@@ -304,7 +304,7 @@ bool Service::isActive(bool force)
         return m_active;
 
     std::string method = "status@" + m_callSign;
-    Core::JSON::ArrayType<PluginHost::MetaData::Service> response;
+    Core::JSON::ArrayType<PluginHost::Metadata::Service> response;
     uint32_t ret  = Service::controller(m_tokenPayload)->Get(THUNDER_RPC_TIMEOUT, method, response);
 
     m_activeQuerySuccess = (ret == Core::ERROR_NONE);
@@ -350,9 +350,9 @@ void Service::initialize(bool activateIfRequired)
             m_token = Service::getSecurityToken(m_tokenPayload);
 
         if(m_token.empty())
-            m_remoteObject = std::make_shared<WPEFrameworkPlugin>(m_callSign, _T(""));
+            m_remoteObject = std::make_shared<ThunderPlugin>(m_callSign, _T(""));
         else
-            m_remoteObject = std::make_shared<WPEFrameworkPlugin>(m_callSign, _T(""), false, m_token);
+            m_remoteObject = std::make_shared<ThunderPlugin>(m_callSign, _T(""), false, m_token);
 
         if(m_remoteObject)
             TTSLOG_INFO("Successfully connected to remote object \"%s\"", m_callSign.c_str());
