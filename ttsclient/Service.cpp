@@ -25,8 +25,8 @@ MODULE_NAME_DECLARATION(BUILD_REFERENCE);
 #define GetSecurityToken(a, b) 0
 #define GetToken(a, b, c) 0
 #else
-#include <Thunder/securityagent/securityagent.h>
-#include <Thunder/securityagent/SecurityTokenUtil.h>
+#include <securityagent/securityagent.h>
+#include <securityagent/SecurityTokenUtil.h>
 #endif
 
 #define INITIAL_TOKEN_STRING "token="
@@ -34,6 +34,12 @@ MODULE_NAME_DECLARATION(BUILD_REFERENCE);
 #define MAX_SECURITY_TOKEN_SIZE 1024
 #define PLUGIN_ACTIVATION_TIMEOUT 2000
 #define STATE_CHANGE_HANDLER_INSTALLATION_FAILURE_THRESHOLD 3
+
+#if (THUNDER_VERSION <= 4)
+using ThunderMetadata = WPEFramework::PluginHost::MetaData;
+#else
+using ThunderMetadata = Thunder::PluginHost::Metadata;
+#endif
 
 namespace TTSThunderClient {
 
@@ -95,7 +101,7 @@ std::string Service::getSecurityToken(const std::string &payload)
     }
 
     if(endpoint.empty()) {
-        Core::File file("/etc/Thunder/config.json");
+        Core::File file(THUNDER_CONFIG_PATH);
 
         if(file.Open(true)) {
             JsonObject config;
@@ -304,7 +310,7 @@ bool Service::isActive(bool force)
         return m_active;
 
     std::string method = "status@" + m_callSign;
-    Core::JSON::ArrayType<PluginHost::Metadata::Service> response;
+    Core::JSON::ArrayType<ThunderMetadata::Service> response;
     uint32_t ret  = Service::controller(m_tokenPayload)->Get(THUNDER_RPC_TIMEOUT, method, response);
 
     m_activeQuerySuccess = (ret == Core::ERROR_NONE);

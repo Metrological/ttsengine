@@ -23,8 +23,8 @@
 #define MODULE_NAME ttsengine
 #endif
 
-#include <Thunder/core/core.h>
-#include <Thunder/plugins/Service.h>
+#include <core/core.h>
+#include <plugins/Service.h>
 #undef LOG
 #include <thread>
 #include <mutex>

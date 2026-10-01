@@ -17,8 +17,17 @@
 # limitations under the License.
 ################################################################################
 
-pkg_check_modules(THUNDER_PLUGINS REQUIRED ThunderPlugins)
-pkg_check_modules(THUNDER_SECURITYUTIL ThunderSecurityUtil)
+find_package(Thunder QUIET)
+
+if (NOT Thunder_FOUND)
+    find_package(WPEFramework REQUIRED)
+    add_definitions(-DThunder=${NAMESPACE})
+endif()
+
+set(THUNDER_CONFIG_PATH "/etc/${NAMESPACE}/config.json" CACHE STRING "Path to config file")
+
+pkg_check_modules(THUNDER_PLUGINS REQUIRED ${NAMESPACE}Plugins)
+pkg_check_modules(THUNDER_SECURITYUTIL ${NAMESPACE}SecurityUtil)
 
 # Build TTS Service Client library
 set(TextToSpeechServiceClient_SOURCES
@@ -33,6 +42,8 @@ if(TTS_DEFAULT_BACKEND STREQUAL "firebolt")
 endif()
 
 add_library(TextToSpeechServiceClient SHARED ${TextToSpeechServiceClient_SOURCES})
+
+target_compile_definitions(TextToSpeechServiceClient PRIVATE THUNDER_CONFIG_PATH="${THUNDER_CONFIG_PATH}")
 
 # Build TTS Service Client library
 set(TTSClient_SOURCES
@@ -79,6 +90,9 @@ target_link_libraries(TTSClient PUBLIC
     ${LIBS}
     TextToSpeechServiceClient
 )
+
+target_compile_options(TextToSpeechServiceClient PRIVATE
+    -Wno-error=unused-parameter)
 
 install(TARGETS TTSClient TextToSpeechServiceClient LIBRARY DESTINATION lib)
 install(FILES TTSClient.h ../common/TTSCommon.h TextToSpeechService.h Service.h DESTINATION include)
